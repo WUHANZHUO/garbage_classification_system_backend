@@ -42,15 +42,13 @@ def update_user_status(user_id):
 @admin_required
 def create_admin_user():
     """创建一个新的管理员账户"""
-    from ..auth.routes import register  # 借用注册逻辑
-    # 我们可以直接调用注册函数，或者重写逻辑并设置 role=1
+    # 借用注册逻辑
     data = request.get_json()
     if User.query.filter_by(username=data.get('username')).first():
         return jsonify({'message': '用户名已存在'}), 409
 
     from ..models import bcrypt
     hashed_password = bcrypt.generate_password_hash(data.get('password')).decode('utf-8')
-    # 关键区别：设置 role=1
     new_admin = User(username=data.get('username'), password=hashed_password, role=1)
 
     db.session.add(new_admin)

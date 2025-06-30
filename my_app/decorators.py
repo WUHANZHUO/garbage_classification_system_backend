@@ -14,13 +14,13 @@ def admin_required(f):
         if 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
 
-            # 【诊断打印 #1】打印出收到的完整原始请求头
+            # 诊断：打印出收到的完整原始请求头
             # print(f"--- 诊断: 收到的原始Header是 -> '{auth_header}'")
 
             # 2. 尝试解析Token
             try:
                 token = auth_header.split(" ")[1]
-                # 【诊断打印 #2】打印出解析后准备用于解码的token
+                # 诊断：打印出解析后准备用于解码的token
                 # print(f"--- 诊断: 解析出的Token是 -> '{token}'")
             except IndexError:
                 # print("--- 诊断错误: Header格式不正确，无法用空格分割出Token ---")
