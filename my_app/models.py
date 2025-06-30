@@ -1,15 +1,12 @@
 # my_app/models.py
 
-# 【修改】直接在这里导入 Flask 扩展库
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
-# 【修改】直接在这里创建扩展实例，这里是它们的“家”
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
 
-# --- 后续的模型定义保持不变 ---
 
 class User(db.Model):
     __tablename__ = 'User'

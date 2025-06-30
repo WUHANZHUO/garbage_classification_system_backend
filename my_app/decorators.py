@@ -45,8 +45,7 @@ def admin_required(f):
         except jwt.ExpiredSignatureError:
             return jsonify({'message': '令牌已过期'}), 401
         except jwt.InvalidTokenError:
-            # 如果执行到这里，说明以上所有步骤都看似正常，但签名验证依然失败
-            print(f"--- 诊断失败: jwt.decode 验证签名失败！请仔细对比上方解析出的Token与你复制的是否逐字一致。---")
+            # print(f"--- 诊断失败: jwt.decode 验证签名失败！请仔细对比上方解析出的Token与你复制的是否逐字一致。---")
             return jsonify({'message': '无效的令牌'}), 401
 
         return f(*args, **kwargs)
