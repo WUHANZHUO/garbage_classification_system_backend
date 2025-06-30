@@ -37,7 +37,7 @@ def login():
 
         # 3. 如果账户状态正常 (status == 0)，则正常生成并返回 token
         payload = {
-            'sub': user.id,
+            'sub': str(user.id),
             'iat': datetime.utcnow(),
             'exp': datetime.utcnow() + timedelta(hours=24)
         }

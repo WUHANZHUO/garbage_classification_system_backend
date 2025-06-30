@@ -32,7 +32,7 @@ def admin_required(f):
         # 3. 尝试解码Token
         try:
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = User.query.get(data['sub'])
+            current_user = User.query.get(int(data['sub']))
 
             if not current_user:
                 return jsonify({'message': '无效的用户'}), 401
@@ -47,6 +47,10 @@ def admin_required(f):
         except jwt.InvalidTokenError:
             # print(f"--- 诊断失败: jwt.decode 验证签名失败！请仔细对比上方解析出的Token与你复制的是否逐字一致。---")
             return jsonify({'message': '无效的令牌'}), 401
+        #except jwt.InvalidTokenError as e:
+        #    print(f"解码失败详细错误: {type(e).__name__}: {str(e)}")
+        #    print(f"错误类型: {type(e)}")
+        #    return jsonify({'message': '无效的令牌'}), 401
 
         return f(*args, **kwargs)
 
