@@ -4,6 +4,42 @@ from flask import request, jsonify, g, current_app
 import jwt
 from .models import User
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            try:
+                token = auth_header.split(" ")[1]
+            except IndexError:
+                return jsonify({'message': '令牌格式错误，应为 "Bearer <token>"'}), 401
+
+        if not token:
+            return jsonify({'message': '缺少认证令牌'}), 401
+
+        try:
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+            current_user = User.query.get(int(data['sub']))
+
+            if not current_user:
+                return jsonify({'message': '无效的用户'}), 401
+
+            # 检查账户是否被封禁
+            if current_user.status == 1:
+                return jsonify({'message': '该账户已被封禁'}), 403
+
+            g.current_user = current_user
+
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': '令牌已过期'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': '无效的令牌'}), 401
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
 
 def admin_required(f):
     @wraps(f)

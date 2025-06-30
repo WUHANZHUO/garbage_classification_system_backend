@@ -1,6 +1,6 @@
 # my_app/admin/routes.py
 from flask import Blueprint, jsonify, request, g
-from ..models import db, User
+from ..models import db, User, bcrypt
 from ..decorators import admin_required
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
@@ -54,3 +54,21 @@ def create_admin_user():
     db.session.add(new_admin)
     db.session.commit()
     return jsonify({'message': '管理员账户创建成功', 'user': new_admin.to_dict()}), 201
+
+@admin_bp.route('/users/<int:user_id>/set_password', methods=['PUT'])
+@admin_required
+def set_user_password(user_id):
+    """(管理员)重置或修改指定用户的密码"""
+    user = User.query.get_or_404(user_id)
+    data = request.get_json()
+    new_password = data.get('new_password')
+
+    if not new_password:
+        return jsonify({'message': '缺少新密码'}), 400
+
+    # 管理员可以直接设置新密码
+    hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    user.password = hashed_password
+    db.session.commit()
+
+    return jsonify({'message': f"用户 '{user.username}' 的密码已更新"}), 200

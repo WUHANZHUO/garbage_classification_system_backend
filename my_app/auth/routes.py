@@ -1,9 +1,10 @@
 # my_app/auth/routes.py
 
-from flask import request, jsonify, Blueprint, current_app
+from flask import request, jsonify, Blueprint, current_app, g
 from datetime import datetime, timedelta
 import jwt
 from ..models import db, User, bcrypt
+from ..decorators import login_required
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -47,3 +48,26 @@ def login():
 
     # 如果用户不存在或密码错误，返回 401
     return jsonify({'message': '用户名或密码错误'}), 401
+
+@auth_bp.route('/change_password', methods=['PUT'])
+@login_required
+def change_password():
+    """用户修改自己的密码"""
+    user = g.current_user
+    data = request.get_json()
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+
+    if not current_password or not new_password:
+        return jsonify({'message': '请求参数不完整'}), 400
+
+    # 验证当前密码
+    if not bcrypt.check_password_hash(user.password, current_password):
+        return jsonify({'message': '当前密码不正确'}), 403
+
+    # 更新密码
+    hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    user.password = hashed_password
+    db.session.commit()
+
+    return jsonify({'message': '密码修改成功'}), 200

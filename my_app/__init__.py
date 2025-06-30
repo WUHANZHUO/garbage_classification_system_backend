@@ -25,6 +25,6 @@ def create_app(config_class=Config):
 
     @app.route('/')
     def index():
-        return "<h1>垃圾分类系统 API (V2.0 - 含后台管理)</h1>"
+        return "<h1>垃圾分类系统 API</h1>"
 
     return app
