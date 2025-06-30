@@ -38,7 +38,7 @@ def update_user_status(user_id):
     return jsonify({'message': f'用户 {user.username} 状态已更新', 'user': user.to_dict()}), 200
 
 
-@admin_bp.route('/users/admins', methods=['POST'])
+@admin_bp.route('/users/create_admin', methods=['POST'])
 @admin_required
 def create_admin_user():
     """创建一个新的管理员账户"""
