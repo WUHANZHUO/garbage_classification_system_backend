@@ -4,3 +4,5 @@ Flask-Bcrypt
 PyMySQL
 PyJWT
 python-dotenv
+Pillow
+matplotlib

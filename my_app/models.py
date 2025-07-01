@@ -13,7 +13,6 @@ class User(db.Model):
     # 状态: 0-正常, 1-封禁
     status = db.Column(db.SmallInteger, default=0, nullable=False)
 
-    # --- 修改点 1 ---
     # 使用 back_populates 来明确指定反向关系的名称
     articles = db.relationship('KnowledgeArticle', back_populates='author', lazy=True)
 
@@ -36,7 +35,6 @@ class KnowledgeArticle(db.Model):
     # 文章状态 (0: 已发布, 1: 已删除) -> 用于逻辑删除
     status = db.Column(db.SmallInteger, default=0, nullable=False)
 
-    # --- 修改点 2 ---
     # 添加这一行，来完成双向关系的定义
     author = db.relationship('User', back_populates='articles')
 
@@ -50,4 +48,17 @@ class KnowledgeArticle(db.Model):
             'author_name': self.author.username if self.author else 'N/A',
             'updated_time': self.updated_time.strftime('%Y-%m-%d %H:%M:%S'),
             'status': self.status
+        }
+
+class GarbageItem(db.Model):
+    __tablename__ = 'garbage_item'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False, index=True) # 为名称添加索引以提高搜索速度
+    category = db.Column(db.String(50), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'category': self.category
         }
