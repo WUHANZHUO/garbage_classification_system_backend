@@ -6,8 +6,8 @@ from ..decorators import admin_required
 articles_bp = Blueprint('articles', __name__, url_prefix='/api/articles')
 
 
-# --- 公共接口 (无需登录) ---
-@articles_bp.route('', methods=['GET'])
+# (无需登录)
+@articles_bp.route('/get', methods=['GET'])
 def get_article_list():
     """获取已发布的文章列表"""
     # 只查询 status 为 0 (已发布) 的文章
@@ -15,7 +15,7 @@ def get_article_list():
     return jsonify([article.to_dict() for article in articles]), 200
 
 
-@articles_bp.route('/<int:article_id>', methods=['GET'])
+@articles_bp.route('/get/<int:article_id>', methods=['GET'])
 def get_article_detail(article_id):
     """获取单篇已发布的文章详情"""
     article = KnowledgeArticle.query.filter_by(id=article_id, status=0).first_or_404()
@@ -23,7 +23,7 @@ def get_article_detail(article_id):
 
 
 # --- 管理员专属接口 ---
-@articles_bp.route('', methods=['POST'])
+@articles_bp.route('/create', methods=['POST'])
 @admin_required
 def create_article():
     """管理员：创建新文章"""
@@ -41,7 +41,7 @@ def create_article():
     return jsonify({'message': '文章创建成功', 'article': new_article.to_dict()}), 201
 
 
-@articles_bp.route('/<int:article_id>', methods=['PUT'])
+@articles_bp.route('/revise/<int:article_id>', methods=['PUT'])
 @admin_required
 def update_article(article_id):
     """管理员：修改文章"""
@@ -55,7 +55,7 @@ def update_article(article_id):
     return jsonify({'message': '文章更新成功', 'article': article.to_dict()}), 200
 
 
-@articles_bp.route('/<int:article_id>', methods=['DELETE'])
+@articles_bp.route('/delete/<int:article_id>', methods=['DELETE'])
 @admin_required
 def delete_article(article_id):
     """管理员：逻辑删除文章"""

@@ -1,30 +1,34 @@
 # my_app/__init__.py
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from config import Config
-# 将 db 和 bcrypt 的导入移到这里，方便其他模块引用
-from .models import db, bcrypt
+
+# 创建扩展实例，但不与app关联
+db = SQLAlchemy()
+bcrypt = Bcrypt()
 
 def create_app(config_class=Config):
+    """
+    应用工厂函数
+    """
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # 初始化 db 和 bcrypt
+    # 将扩展实例与app关联
     db.init_app(app)
     bcrypt.init_app(app)
+    CORS(app) # 为整个应用启用CORS，方便前后端分离调试
 
-    # --- 注册蓝图 ---
+    # 导入蓝图
     from .auth.routes import auth_bp
-    app.register_blueprint(auth_bp)
-
-    # 新增：注册管理员和文章蓝图
     from .admin.routes import admin_bp
-    app.register_blueprint(admin_bp)
-
     from .articles.routes import articles_bp
-    app.register_blueprint(articles_bp)
 
-    @app.route('/')
-    def index():
-        return "<h1>垃圾分类系统 API</h1>"
+    # 注册蓝图
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(articles_bp)
 
     return app
