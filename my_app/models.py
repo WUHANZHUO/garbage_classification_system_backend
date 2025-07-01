@@ -12,9 +12,9 @@ class User(db.Model):
     role = db.Column(db.SmallInteger, default=0, nullable=False)
     # 状态: 0-正常, 1-封禁
     status = db.Column(db.SmallInteger, default=0, nullable=False)
-
     # 使用 back_populates 来明确指定反向关系的名称
     articles = db.relationship('KnowledgeArticle', back_populates='author', lazy=True)
+    histories = db.relationship('QueryHistory', backref='owner', lazy='dynamic')
 
     def to_dict(self):
         return {
@@ -61,4 +61,24 @@ class GarbageItem(db.Model):
             'id': self.id,
             'name': self.name,
             'category': self.category
+        }
+
+
+class QueryHistory(db.Model):
+    __tablename__ = 'queryhistory'
+    id = db.Column(db.Integer, primary_key=True, comment='记录ID, 主键, 自增')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, comment='用户ID, 外键, 关联User(id)')
+    query_type = db.Column(db.String(20), nullable=False, comment="查询方式 ('text' 或 'image')")
+    query_content = db.Column(db.Text, nullable=False, comment='查询内容 (文字或图片URL)')
+    result_category = db.Column(db.String(50), nullable=False, comment='识别结果分类')
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, comment='查询时间')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'query_type': self.query_type,
+            'query_content': self.query_content,
+            'result_category': self.result_category,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
         }

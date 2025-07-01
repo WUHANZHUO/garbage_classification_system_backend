@@ -29,7 +29,7 @@ def login_required(f):
             if current_user.status == 1:
                 return jsonify({'message': '该账户已被封禁'}), 403
 
-            g.current_user = current_user
+            g.user = current_user
 
         except jwt.ExpiredSignatureError:
             return jsonify({'message': '令牌已过期'}), 401
@@ -76,7 +76,7 @@ def admin_required(f):
             if current_user.role != 1:
                 return jsonify({'message': '需要管理员权限'}), 403
 
-            g.current_user = current_user
+            g.user = current_user
 
         except jwt.ExpiredSignatureError:
             return jsonify({'message': '令牌已过期'}), 401
