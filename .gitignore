@@ -1,4 +1,4 @@
 # .gitignore
 
-# 忽略存放用户上传图片的文件夹
 my_app/recognition/uploads/
+my_app/recognition/garbage_classifier_resnet18.pth
