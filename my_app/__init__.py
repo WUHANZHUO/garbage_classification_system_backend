@@ -26,11 +26,13 @@ def create_app(config_class=Config):
     from .admin.routes import admin_bp
     from .articles.routes import articles_bp
     from .recognition.routes import recognition_bp
+    from .history.routes import history_bp
 
     # 注册蓝图
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(articles_bp)
     app.register_blueprint(recognition_bp)
+    app.register_blueprint(history_bp)
 
     return app

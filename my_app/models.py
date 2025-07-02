@@ -14,7 +14,7 @@ class User(db.Model):
     status = db.Column(db.SmallInteger, default=0, nullable=False)
     # 使用 back_populates 来明确指定反向关系的名称
     articles = db.relationship('KnowledgeArticle', back_populates='author', lazy=True)
-    histories = db.relationship('QueryHistory', backref='owner', lazy='dynamic')
+    histories = db.relationship('QueryHistory', back_populates='owner', lazy='dynamic', cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
@@ -32,10 +32,9 @@ class KnowledgeArticle(db.Model):
     content = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     updated_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
-    # 文章状态 (0: 已发布, 1: 已删除) -> 用于逻辑删除
+    # 文章状态 (0: 已发布, 1: 已删除) 用于逻辑删除
     status = db.Column(db.SmallInteger, default=0, nullable=False)
-
-    # 添加这一行，来完成双向关系的定义
+    # 双向关系的定义
     author = db.relationship('User', back_populates='articles')
 
     def to_dict(self):
@@ -44,11 +43,11 @@ class KnowledgeArticle(db.Model):
             'title': self.title,
             'content': self.content,
             'author_id': self.author_id,
-            # 这里的 self.author 依然可以正常工作
             'author_name': self.author.username if self.author else 'N/A',
             'updated_time': self.updated_time.strftime('%Y-%m-%d %H:%M:%S'),
             'status': self.status
         }
+
 
 class GarbageItem(db.Model):
     __tablename__ = 'garbage_item'
@@ -72,6 +71,10 @@ class QueryHistory(db.Model):
     query_content = db.Column(db.Text, nullable=False, comment='查询内容 (文字或图片URL)')
     result_category = db.Column(db.String(50), nullable=False, comment='识别结果分类')
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, comment='查询时间')
+    status = db.Column(db.SmallInteger, default=0, nullable=False, comment='记录状态 (0: 可查询, 1: 已删除)')
+
+    # 定义与User模型的反向关系
+    owner = db.relationship('User', back_populates='histories')
 
     def to_dict(self):
         return {
@@ -80,5 +83,6 @@ class QueryHistory(db.Model):
             'query_type': self.query_type,
             'query_content': self.query_content,
             'result_category': self.result_category,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'status': self.status
         }
