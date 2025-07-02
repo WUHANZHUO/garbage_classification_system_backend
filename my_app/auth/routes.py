@@ -71,3 +71,12 @@ def change_password():
     db.session.commit()
 
     return jsonify({'message': '密码修改成功'}), 200
+
+
+@auth_bp.route('/get_info', methods=['GET'])
+@login_required
+def get_me():
+    """获取当前登录用户的详细信息"""
+    # @login_required 装饰器已将用户信息放入 g.user
+    user = g.user
+    return jsonify(user.to_dict()), 200

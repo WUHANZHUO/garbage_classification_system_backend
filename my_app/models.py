@@ -10,6 +10,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     # 角色: 0-普通用户, 1-管理员
     role = db.Column(db.SmallInteger, default=0, nullable=False)
+    points = db.Column(db.Integer, default=0, nullable=False)
     # 状态: 0-正常, 1-封禁
     status = db.Column(db.SmallInteger, default=0, nullable=False)
     # 使用 back_populates 来明确指定反向关系的名称
@@ -21,7 +22,8 @@ class User(db.Model):
             'id': self.id,
             'username': self.username,
             'role': self.role,
-            'status': self.status
+            'status': self.status,
+            'points': self.points
         }
 
 
