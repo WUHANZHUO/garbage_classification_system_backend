@@ -11,7 +11,7 @@ CLASS_NAMES = None
 # --- 常量定义 ---
 # 获取当前文件所在的目录，并拼接模型和类别文件的绝对路径
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, 'garbage_classifier_resnet18.pth')
+MODEL_PATH = os.path.join(BASE_DIR, 'model/garbage_classifier_resnet18.pth')
 CLASS_NAMES_FILE = os.path.join(BASE_DIR, 'class_names.txt')
 
 

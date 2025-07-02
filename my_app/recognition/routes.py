@@ -48,6 +48,8 @@ def recognize_image():
             # 生成可供外部访问的图片URL
             image_url = url_for('static', filename=f'uploads/{unique_filename}', _external=True)
 
+            g.user.points += 1
+
             new_history = QueryHistory(
                 user_id=g.user.id,
                 query_type='image',
@@ -85,6 +87,8 @@ def recognize_text():
 
     # 2. 直接访问【单个对象】的属性，不再需要 [0]
     result_category = result.category if result else '未找到'
+
+    g.user.points += 1
 
     # 写入历史记录
     new_history = QueryHistory(
