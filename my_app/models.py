@@ -33,7 +33,7 @@ class KnowledgeArticle(db.Model):
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    updated_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_time = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
     # 文章状态 (0: 已发布, 1: 已删除) 用于逻辑删除
     status = db.Column(db.SmallInteger, default=0, nullable=False)
     # 双向关系的定义
@@ -72,7 +72,7 @@ class QueryHistory(db.Model):
     query_type = db.Column(db.String(20), nullable=False, comment="查询方式 ('text' 或 'image')")
     query_content = db.Column(db.Text, nullable=False, comment='查询内容 (文字或图片URL)')
     result_category = db.Column(db.String(50), nullable=False, comment='识别结果分类')
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, comment='查询时间')
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now, comment='查询时间')
     status = db.Column(db.SmallInteger, default=0, nullable=False, comment='记录状态 (0: 可查询, 1: 已删除)')
 
     # 定义与User模型的反向关系
@@ -111,7 +111,7 @@ class RedemptionHistory(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, comment='用户ID, 外键, 关联User(id)')
     reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=False, comment='奖品ID, 外键, 关联Reward(id)')
     points_spent = db.Column(db.Integer, nullable=False, comment='消耗积分')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, comment='兑换时间')
+    created_at = db.Column(db.DateTime, default=datetime.now, nullable=False, comment='兑换时间')
 
     # 关系
     reward = db.relationship('Reward', backref='redemption_history', lazy=True)
