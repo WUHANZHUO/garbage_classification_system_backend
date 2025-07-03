@@ -70,7 +70,6 @@ def recognize_image():
     return jsonify({'message': '服务器端发生未知错误'}), 500
 
 
-
 @recognition_bp.route('/text', methods=['GET'])
 @login_required
 def recognize_text():
@@ -85,7 +84,6 @@ def recognize_text():
     search_term = f"%{query}%"
     result = GarbageItem.query.filter(GarbageItem.name.ilike(search_term)).first()
 
-    # 2. 直接访问【单个对象】的属性，不再需要 [0]
     result_category = result.category if result else '未找到'
 
     g.user.points += 1

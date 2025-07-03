@@ -22,7 +22,6 @@ def get_article_detail(article_id):
     return jsonify(article.to_dict()), 200
 
 
-# --- 管理员专属接口 ---
 @articles_bp.route('/create', methods=['POST'])
 @admin_required
 def create_article():

@@ -27,6 +27,7 @@ def create_app(config_class=Config):
     from .articles.routes import articles_bp
     from .recognition.routes import recognition_bp
     from .history.routes import history_bp
+    from .points.routes import points_bp
 
     # 注册蓝图
     app.register_blueprint(auth_bp)
@@ -34,5 +35,6 @@ def create_app(config_class=Config):
     app.register_blueprint(articles_bp)
     app.register_blueprint(recognition_bp)
     app.register_blueprint(history_bp)
+    app.register_blueprint(points_bp)
 
     return app

@@ -88,3 +88,40 @@ class QueryHistory(db.Model):
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'status': self.status
         }
+
+
+class Reward(db.Model):
+    __tablename__ = 'reward'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='奖品ID, 主键, 自增')
+    name = db.Column(db.String(100), nullable=False, comment='奖品名称')
+    points_cost = db.Column(db.Integer, nullable=False, comment='兑换所需积分')
+    stock = db.Column(db.Integer, nullable=False, comment='库存数量')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'points_cost': self.points_cost,
+            'stock': self.stock
+        }
+
+class RedemptionHistory(db.Model):
+    __tablename__ = 'redemptionhistory'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='兑换记录ID, 主键, 自增')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, comment='用户ID, 外键, 关联User(id)')
+    reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=False, comment='奖品ID, 外键, 关联Reward(id)')
+    points_spent = db.Column(db.Integer, nullable=False, comment='消耗积分')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, comment='兑换时间')
+
+    # 关系
+    reward = db.relationship('Reward', backref='redemption_history', lazy=True)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'reward_id': self.reward_id,
+            'reward_name': self.reward.name if self.reward else None,
+            'points_spent': self.points_spent,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None
+        }
