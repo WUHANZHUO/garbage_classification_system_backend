@@ -46,7 +46,7 @@ def recognize_image():
         if category and probability is not None:
             # 3. 写入历史记录
             # 生成可供外部访问的图片URL
-            image_url = url_for('static', filename=f'uploads/{unique_filename}', _external=True)
+            image_url = url_for('static', filename=f'uploads/{unique_filename}')
 
             g.user.points += 1
 
