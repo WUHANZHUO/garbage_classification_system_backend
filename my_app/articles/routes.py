@@ -28,7 +28,7 @@ def create_article():
     """管理员：创建新文章"""
     data = request.get_json()
     # 作者 ID 就是当前登录的管理员
-    author_id = g.current_user.id
+    author_id = g.user.id
 
     new_article = KnowledgeArticle(
         title=data.get('title'),

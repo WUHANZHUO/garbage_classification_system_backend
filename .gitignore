@@ -2,3 +2,4 @@
 
 my_app/recognition/uploads/
 my_app/recognition/model/
+.env
