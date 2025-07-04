@@ -53,7 +53,7 @@ def login():
 @login_required
 def change_password():
     """用户修改自己的密码"""
-    user = g.current_user
+    user = g.user
     data = request.get_json()
     current_password = data.get('current_password')
     new_password = data.get('new_password')
