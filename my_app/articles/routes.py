@@ -11,7 +11,7 @@ articles_bp = Blueprint('articles', __name__, url_prefix='/api/articles')
 def get_article_list():
     """获取已发布的文章列表"""
     # 只查询 status 为 0 (已发布) 的文章
-    articles = KnowledgeArticle.query.filter_by(status=0).order_by(KnowledgeArticle.updated_time.desc()).all()
+    articles = KnowledgeArticle.query.order_by(KnowledgeArticle.updated_time.desc()).all()
     return jsonify([article.to_dict() for article in articles]), 200
 
 
@@ -29,6 +29,7 @@ def create_article():
     data = request.get_json()
     # 作者 ID 就是当前登录的管理员
     author_id = g.user.id
+
 
     new_article = KnowledgeArticle(
         title=data.get('title'),
