@@ -15,6 +15,20 @@ def get_article_list():
     return jsonify([article.to_dict() for article in articles]), 200
 
 
+@articles_bp.route('/search', methods=['GET'])
+def search_articles():
+    """根据标题模糊搜索知识文章"""
+    title_query = request.args.get('title')
+
+    if not title_query:
+        return jsonify({'message': '缺少标题查询参数 "title"'}), 400
+
+    search_term = f"%{title_query}%"
+    articles = KnowledgeArticle.query.filter(KnowledgeArticle.title.ilike(search_term)).all()
+
+    return jsonify([article.to_dict() for article in articles]), 200
+
+
 @articles_bp.route('/get/<int:article_id>', methods=['GET'])
 def get_article_detail(article_id):
     """获取单篇已发布的文章详情"""

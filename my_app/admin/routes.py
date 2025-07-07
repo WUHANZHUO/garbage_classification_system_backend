@@ -74,6 +74,7 @@ def create_admin_user():
     db.session.commit()
     return jsonify({'message': '管理员账户创建成功', 'user': new_admin.to_dict()}), 201
 
+
 @admin_bp.route('/users/<int:user_id>/set_password', methods=['PUT'])
 @admin_required
 def set_user_password(user_id):
