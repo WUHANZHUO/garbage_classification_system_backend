@@ -22,6 +22,25 @@ def get_user_by_id(user_id):
     return jsonify(user.to_dict()), 200
 
 
+@admin_bp.route('/users/search', methods=['GET'])
+@admin_required
+def search_users_by_username():
+    """(管理员)根据用户名模糊搜索用户"""
+    username_query = request.args.get('username')
+
+    if not username_query:
+        return jsonify({'message': '缺少用户名查询参数 "username"'}), 400
+
+    # 模糊查询
+    search_term = f"%{username_query}%"
+    users = User.query.filter(User.username.ilike(search_term)).all()
+
+    if not users:
+        return jsonify({'message': '未找到匹配的用户', 'users': []}), 200
+
+    return jsonify([user.to_dict() for user in users]), 200
+
+
 @admin_bp.route('/users/<int:user_id>/status', methods=['PUT'])
 @admin_required
 def update_user_status(user_id):
