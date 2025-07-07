@@ -2,7 +2,7 @@
 
 第一次运行本系统前，需要做如下修改：
 
-1. my_app/recognition路径下新建updates文件夹。
+1. my_app/recognition路径下新建uploads文件夹。
 
 2. my_app/recognition路径下新建model文件夹，并将模型文件（garbage_classifier_resnet18.pth）放入其中。
 
