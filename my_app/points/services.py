@@ -7,7 +7,7 @@ def get_rewards_service():
     return Reward.query.filter(Reward.stock > 0).all()
 
 
-def redeem_reward_service(user, reward_id):
+def redeem_reward_service(user, reward_id, phone_number, address):
     """用户兑换奖品的业务逻辑"""
     reward = Reward.query.get(reward_id)
 
@@ -24,7 +24,9 @@ def redeem_reward_service(user, reward_id):
         new_redemption = RedemptionHistory(
             user_id=user.id,
             reward_id=reward.id,
-            points_spent=reward.points_cost
+            points_spent=reward.points_cost,
+            phone_number=phone_number,
+            address=address
         )
         db.session.add(new_redemption)
         db.session.commit()

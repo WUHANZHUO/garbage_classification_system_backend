@@ -1,5 +1,5 @@
 # my_app/points/routes.py
-from flask import Blueprint, jsonify, g
+from flask import Blueprint, jsonify, g, request
 from .services import get_rewards_service, redeem_reward_service, get_redemption_history_service
 from ..decorators import login_required, admin_required
 
@@ -14,11 +14,26 @@ def get_rewards():
     return jsonify([reward.to_dict() for reward in rewards]), 200
 
 
-@points_bp.route('/rewards/get/<int:reward_id>', methods=['POST'])
+@points_bp.route('/rewards/redeem', methods=['POST'])
 @login_required
-def redeem_reward(reward_id):
+def redeem_reward():
     """用户兑换奖品"""
-    user, message = redeem_reward_service(g.user, reward_id)
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': '请求体不能为空'}), 400
+
+    reward_id = data.get('reward_id')
+    phone_number = data.get('phone_number')
+    address = data.get('address')
+
+    if not reward_id:
+        return jsonify({'message': '缺少 reward_id 参数'}), 400
+    if not phone_number:
+        return jsonify({'message': '缺少 phone_number 参数'}), 400
+    if not address:
+        return jsonify({'message': '缺少 address 参数'}), 400
+
+    user, message = redeem_reward_service(g.user, reward_id, phone_number, address)
 
     if not user:
         if "不存在" in message:

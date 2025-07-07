@@ -112,6 +112,8 @@ class RedemptionHistory(db.Model):
     reward_id = db.Column(db.Integer, db.ForeignKey('reward.id'), nullable=False, comment='奖品ID, 外键, 关联Reward(id)')
     points_spent = db.Column(db.Integer, nullable=False, comment='消耗积分')
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False, comment='兑换时间')
+    phone_number = db.Column(db.String(50), nullable=False, comment='收货手机号')
+    address = db.Column(db.String(255), nullable=False, comment='收货地址')
 
     # 关系
     reward = db.relationship('Reward', backref='redemption_history', lazy=True)
@@ -123,5 +125,7 @@ class RedemptionHistory(db.Model):
             'reward_id': self.reward_id,
             'reward_name': self.reward.name if self.reward else None,
             'points_spent': self.points_spent,
-            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S') if self.created_at else None,
+            'phone_number': self.phone_number,
+            'address': self.address
         }
