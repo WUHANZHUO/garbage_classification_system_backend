@@ -1,6 +1,6 @@
 # my_app/points/routes.py
-from flask import Blueprint, jsonify, g, request
-from ..models import db, Reward, RedemptionHistory, User
+from flask import Blueprint, jsonify, g
+from .services import get_rewards_service, redeem_reward_service, get_redemption_history_service
 from ..decorators import login_required, admin_required
 
 points_bp = Blueprint('points', __name__, url_prefix='/api/points')
@@ -10,7 +10,7 @@ points_bp = Blueprint('points', __name__, url_prefix='/api/points')
 @login_required
 def get_rewards():
     """获取所有可兑换的奖品列表"""
-    rewards = Reward.query.filter(Reward.stock >= 0).all()
+    rewards = get_rewards_service()
     return jsonify([reward.to_dict() for reward in rewards]), 200
 
 
@@ -18,51 +18,27 @@ def get_rewards():
 @login_required
 def redeem_reward(reward_id):
     """用户兑换奖品"""
-    user = g.user
-    reward = Reward.query.get(reward_id)
+    user, message = redeem_reward_service(g.user, reward_id)
 
-    if not reward:
-        return jsonify({'message': '奖品不存在'}), 404
+    if not user:
+        if "不存在" in message:
+            return jsonify({'message': message}), 404
+        if "不足" in message:
+            return jsonify({'message': message}), 400
+        # 其他错误
+        return jsonify({'message': message}), 500
 
-    if reward.stock <= 0:
-        return jsonify({'message': '奖品库存不足'}), 400
-
-    if user.points < reward.points_cost:
-        return jsonify({'message': '用户积分不足'}), 400
-
-    try:
-        # 扣除用户积分
-        user.points -= reward.points_cost
-        # 减少奖品库存
-        reward.stock -= 1
-
-        # 创建兑换历史记录
-        new_redemption = RedemptionHistory(
-            user_id=user.id,
-            reward_id=reward.id,
-            points_spent=reward.points_cost
-        )
-        db.session.add(new_redemption)
-
-        # 提交事务
-        db.session.commit()
-
-        return jsonify({
-            'message': '兑换成功',
-            'remaining_points': user.points
-        }), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'message': f'处理兑换时发生错误: {e}'}), 500
+    return jsonify({
+        'message': message,
+        'remaining_points': user.points
+    }), 200
 
 
 @points_bp.route('/rewards/history', methods=['GET'])
 @login_required
 def get_redemption_history():
     """获取当前用户的兑换历史"""
-    user = g.user
-    history = RedemptionHistory.query.filter_by(user_id=user.id).order_by(RedemptionHistory.created_at.desc()).all()
+    history = get_redemption_history_service(g.user.id)
     return jsonify([item.to_dict() for item in history]), 200
 
 
@@ -71,9 +47,5 @@ def get_redemption_history():
 @admin_required
 def get_user_redemption_history(user_id):
     """(管理员) 获取指定用户的兑换历史"""
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'message': '用户不存在'}), 404
-
-    history = RedemptionHistory.query.filter_by(user_id=user_id).order_by(RedemptionHistory.created_at.desc()).all()
+    history = get_redemption_history_service(user_id)
     return jsonify([item.to_dict() for item in history]), 200
