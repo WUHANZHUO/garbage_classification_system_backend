@@ -57,7 +57,7 @@ def get_redemption_history():
     return jsonify([item.to_dict() for item in history]), 200
 
 
-@points_bp.route('/reward/history/<int:user_id>', methods=['GET'])
+@points_bp.route('/rewards/history/<int:user_id>', methods=['GET'])
 @login_required
 @admin_required
 def get_user_redemption_history(user_id):
