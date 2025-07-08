@@ -1,5 +1,7 @@
 # my_app/recognition/routes.py
-from flask import Blueprint, request, jsonify, g
+import os
+
+from flask import Blueprint, request, jsonify, g, send_from_directory
 from .services import recognize_text_service, recognize_image_service
 from ..decorators import login_required
 
@@ -45,3 +47,12 @@ def recognize_text():
         return jsonify({'message': '未找到匹配的垃圾信息', 'results': []}), 200
 
     return jsonify(result.to_dict()), 200
+
+
+@recognition_bp.route('/uploads/<path:filename>')
+def get_uploaded_image(filename):
+    """
+    为 uploads 文件夹中的图片提供访问路由
+    """
+    upload_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+    return send_from_directory(upload_folder, filename)
