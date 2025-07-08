@@ -1,4 +1,5 @@
 # my_app/history/services.py
+from sqlalchemy import func
 from ..models import db, QueryHistory, User
 
 
@@ -39,3 +40,14 @@ def delete_history_service(history_id, current_user_id):
     db.session.commit()
 
     return True, "历史记录已删除"
+
+
+def get_category_statistics_service():
+    """
+    统计查询历史中每个类别的数量
+    :return: 一个包含类别和数量的元组列表
+    """
+    return db.session.query(
+        QueryHistory.result_category,
+        func.count(QueryHistory.result_category).label('count')
+    ).group_by(QueryHistory.result_category).all()

@@ -1,7 +1,7 @@
 # my_app/history/routes.py
 from flask import Blueprint, jsonify, g
 from ..decorators import login_required, admin_required
-from .services import get_history_by_user_id_service, delete_history_service
+from .services import get_history_by_user_id_service, delete_history_service, get_category_statistics_service
 
 history_bp = Blueprint('history', __name__, url_prefix='/api/history')
 
@@ -33,3 +33,12 @@ def delete_history(history_id):
         return jsonify({'message': message}), 403  # 403 Forbidden
 
     return jsonify({'message': message}), 200
+
+
+@history_bp.route('/stats', methods=['GET'])
+@admin_required
+def get_category_stats():
+    """(管理员) 获取各类别识别数量的统计信息"""
+    stats = get_category_statistics_service()
+    stats_dict = [{'category': category, 'count': count} for category, count in stats]
+    return jsonify(stats_dict), 200
