@@ -50,7 +50,7 @@ def recognize_text():
 
 
 @recognition_bp.route('/uploads/<path:filename>')
-@login_required
+# @login_required
 def get_uploaded_image(filename):
     """
     为 uploads 文件夹中的图片提供访问路由
