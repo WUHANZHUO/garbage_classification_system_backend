@@ -56,7 +56,7 @@ def recognize_image_service(file, user):
         new_history = QueryHistory(
             user_id=user.id,
             query_type='image',
-            query_content=image_url,  # 存储可访问的URL
+            query_content=unique_filename,
             result_category=category
         )
         db.session.add(new_history)
